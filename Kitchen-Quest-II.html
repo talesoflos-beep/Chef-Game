@@ -264,6 +264,43 @@ const cleared = STATIONS.map(()=>false);
 const bossDone = STATIONS.map(s=>!s.boss);
 const XP_PER_LEVEL = 400;
 
+// ============ PERSISTENCE ============
+// The phone locking mid-simmer is the normal case, not the edge case.
+// Everything needed to resume rides in one localStorage blob, saved on every
+// render. localStorage works from file:// — it's keyed per session id.
+const SAVE_KEY = SESSION ? 'kq:' + (SESSION.id || 'session') : null;
+
+function save(){
+  if(!SAVE_KEY) return;
+  try{
+    localStorage.setItem(SAVE_KEY, JSON.stringify({ v:1, view, si, step, xp, cleared, bossDone }));
+  }catch(e){ /* storage full/denied — the game still plays, it just won't resume */ }
+}
+function wipeSave(){ try{ SAVE_KEY && localStorage.removeItem(SAVE_KEY); }catch(e){} }
+
+function restore(){
+  if(!SAVE_KEY) return;
+  let d = null;
+  try{ d = JSON.parse(localStorage.getItem(SAVE_KEY)); }catch(e){}
+  if(!d || d.v !== 1) return;
+  // content changed since the save → the indices can't be trusted; start fresh
+  if(!Array.isArray(d.cleared) || d.cleared.length !== STATIONS.length) return;
+  xp = d.xp|0;
+  d.cleared.forEach((v,i)=>cleared[i]=!!v);
+  (d.bossDone||[]).forEach((v,i)=>bossDone[i]=bossDone[i]||!!v);
+  si = Math.min(Math.max(d.si|0, 0), STATIONS.length-1);
+  step = Math.min(Math.max(d.step|0, 0), STATIONS[si].steps.length-1);
+  view = ['title','map','station','boss','victory'].includes(d.view) ? d.view : 'map';
+  if(view==='boss' && (!STATIONS[si].boss || bossDone[si])) view = 'station';
+}
+
+function hardReset(){
+  wipeSave();
+  si=0; step=0; xp=0;
+  STATIONS.forEach((s,i)=>{ cleared[i]=false; bossDone[i]=!s.boss; });
+  view='title'; render(); window.scrollTo(0,0);
+}
+
 const screen = document.getElementById('screen');
 const hud = document.getElementById('hud');
 
@@ -294,6 +331,7 @@ function addXP(n, why){
 // ============ RENDER ============
 function render(){
   if(PROBLEMS.length) return renderDataError();
+  save();               // state is settled by the time anything renders
   syncHUD();
   if(view==='title') return renderTitle();
   if(view==='map') return renderMap();
@@ -340,11 +378,14 @@ function renderMap(){
       <span class="nodestat">${cleared[i]?'CLEARED':(unlocked?`${s.xp} XP`:'🔒')}</span>
     </button>`;
   });
-  html += `</div>`;
+  html += `<button class="cta ghost" id="restart" style="margin-top:16px">↺ restart quest · wipes progress</button></div>`;
   screen.innerHTML = html;
   screen.querySelectorAll('.node:not(.locked)').forEach(n=>{
     n.onclick = ()=>{ si=+n.dataset.i; step=0; view='station'; render(); };
   });
+  document.getElementById('restart').onclick = ()=>{
+    if(confirm('Wipe all progress and start the quest over?')) hardReset();
+  };
 }
 function firstOpen(){ const i = cleared.findIndex(c=>!c); return i<0?STATIONS.length-1:i; }
 
@@ -422,7 +463,7 @@ function renderBoss(){
       if(bossDone[si]) return;
       const i = +b.dataset.q;
       if(i === s.boss.right){
-        b.classList.add('right'); bossDone[si]=true;
+        b.classList.add('right'); bossDone[si]=true; save();
         document.getElementById('qex').classList.add('show');
         document.getElementById('bnext').disabled = false;
         screen.querySelectorAll('.qopt').forEach(x=>x.disabled=true);
@@ -470,12 +511,7 @@ function renderVictory(){
     </div>` : ''}
     <button class="cta" style="margin-top:20px" id="again">Run it again</button>
   </div>`;
-  document.getElementById('again').onclick = ()=>{
-    si=0; step=0; xp=0;
-    cleared.forEach((_,i)=>cleared[i]=false);
-    STATIONS.forEach((s,i)=>bossDone[i]=!s.boss);
-    view='title'; render(); window.scrollTo(0,0);
-  };
+  document.getElementById('again').onclick = ()=>hardReset();
 }
 
 // ============ TIMER ============
@@ -531,6 +567,7 @@ function toast(msg){ const t=document.getElementById('toast');
   clearTimeout(toastT); toastT = setTimeout(()=>t.classList.remove('on'), 2200); }
 
 document.getElementById('mapBtn').onclick = ()=>{ stopTimers(); view='map'; render(); };
+restore();   // lock screen, refresh, tab kill — come back to exactly where you were
 render();
 </script>
 </body>
