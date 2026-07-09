@@ -20,8 +20,13 @@ window.KQ_SESSION = {
     "title": "https://d8j0ntlcm91z4.cloudfront.net/user_3EylphvKs2oAnPWYNSj56iFecDN/hf_20260709_173935_8495c97f-d860-4e49-9775-781cf0a20d40.png",
     "roll":  "https://d8j0ntlcm91z4.cloudfront.net/user_3EylphvKs2oAnPWYNSj56iFecDN/hf_20260709_173914_494b2dd8-a730-468f-be82-501b82428780.png",
     "cutlet": "https://d8j0ntlcm91z4.cloudfront.net/user_3EylphvKs2oAnPWYNSj56iFecDN/hf_20260709_173924_f714dd40-bd78-43b7-8206-3d8a3835e7dd.png",
-    "rice": "",
-    "pan": ""
+    "rice": "https://d8j0ntlcm91z4.cloudfront.net/user_3EylphvKs2oAnPWYNSj56iFecDN/hf_20260709_174652_0ce24b62-00cf-4309-8475-a11a22183653.png",
+    "pan": "https://d8j0ntlcm91z4.cloudfront.net/user_3EylphvKs2oAnPWYNSj56iFecDN/hf_20260709_174700_3f5f5f70-a9df-4a55-aeeb-ab9ea0cd5604.png",
+    "prep": "https://d8j0ntlcm91z4.cloudfront.net/user_3EylphvKs2oAnPWYNSj56iFecDN/hf_20260709_195902_2c6ddbf0-eff3-4b1b-bb5a-2f0099a6836f.png",
+    "fillings": "https://d8j0ntlcm91z4.cloudfront.net/user_3EylphvKs2oAnPWYNSj56iFecDN/hf_20260709_195906_e39b5233-6af8-4774-ae10-fedec336702a.png",
+    "thaw": "https://d8j0ntlcm91z4.cloudfront.net/user_3EylphvKs2oAnPWYNSj56iFecDN/hf_20260709_195910_216182c1-2b5a-44b6-8c3c-1c8f75b29dda.png",
+    "fond": "https://d8j0ntlcm91z4.cloudfront.net/user_3EylphvKs2oAnPWYNSj56iFecDN/hf_20260709_195914_0fd44c9b-8e1d-453c-97b9-49622b964241.png",
+    "chickpea": "https://d8j0ntlcm91z4.cloudfront.net/user_3EylphvKs2oAnPWYNSj56iFecDN/hf_20260709_195918_cee61ea5-08ba-4ca4-8f4d-2ec5caeef35f.png"
   },
   "victory": {
     "emoji": "🍣",
@@ -45,6 +50,7 @@ window.KQ_SESSION = {
       "act": 1, "icon": "🎒", "name": "Before you leave", "chip": "board", "xp": 100,
       "blurb": "Three things happen now or tonight falls apart. Two minutes of work, then you're free.",
       "lesson": {
+        "image": "prep",
         "title": "THE ONE RULE OF TODAY",
         "body": "Cold stays cold. Frozen thaws in the fridge, never on the counter — the outside enters the bacteria zone hours before the middle softens. And you shop <b>before</b> you roll, because the nori can't be at the store while you're at his kitchen table."
       },
@@ -79,6 +85,7 @@ window.KQ_SESSION = {
       "act": 1, "icon": "🥒", "name": "Cut the fillings", "chip": "board", "xp": 120,
       "blurb": "While the rice cools. One shape for everything: long, thin, pencil-width.",
       "lesson": {
+        "image": "fillings",
         "title": "WHY PENCIL-WIDTH",
         "body": "Fat fillings force a fat roll, and fat rolls burst at the seam. Thin uniform sticks roll tight and slice clean. Bonus: <b>imitation crab is already fully cooked</b> — it goes from package to roll with zero heat. That's why tonight needed no thawing."
       },
@@ -118,6 +125,7 @@ window.KQ_SESSION = {
       "act": 2, "icon": "🏠", "name": "Home. Thaw check.", "chip": "check", "xp": 140,
       "blurb": "You're back and fed. The fridge has thawed chicken waiting. This is the 45 minutes that feeds you through Saturday.",
       "lesson": {
+        "image": "thaw",
         "title": "WHY TONIGHT AND NOT TOMORROW",
         "body": "Last time a fun night sat in front of a cook session, the cook session lost — Tex-Mex night has been carried forward for five weeks. Cooked chicken keeps 3–4 days, so Thursday night covers Fri and Sat cleanly. Tomorrow-night cooking doesn't. Forty-five minutes, and you're done."
       },
@@ -171,6 +179,7 @@ window.KQ_SESSION = {
       "act": 2, "icon": "🫘", "name": "Tex-Mex beans & veg", "chip": "pot", "xp": 180,
       "blurb": "The bean night you've carried since before vacation. Five weeks. It happens tonight, in the chicken pan, for free.",
       "lesson": {
+        "image": "fond",
         "title": "FOND IS FREE FLAVOR",
         "body": "Those browned bits welded to the pan after the chicken? That's <b>fond</b> — concentrated roasted flavor. A splash of broth dissolves it and carries it into the beans. This is precisely why you don't wash the pan between the chicken and the beans. Washing it is throwing away the best ingredient in the dish."
       },
@@ -188,6 +197,7 @@ window.KQ_SESSION = {
       "act": 2, "icon": "🏆", "name": "Snack lab & breakfast", "chip": "store", "xp": 220, "final": true,
       "blurb": "Boss level. Set up the week while the oven's already warm. One snack experiment. One breakfast system. Not three of each.",
       "lesson": {
+        "image": "chickpea",
         "title": "THE CHICKPEA SCIENCE",
         "body": "Moisture is the enemy of crunch — that's the entire recipe. The drier the chickpeas go in, the crispier they come out, which is why the towel-rub matters more than any seasoning you choose. 400°F. And they keep crisping <b>as they cool</b>, so never judge them straight out of the oven."
       },
