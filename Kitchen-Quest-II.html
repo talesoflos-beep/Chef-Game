@@ -546,6 +546,21 @@ function toggleTimer(btn){
 }
 function stopTimers(){ Object.values(timers).forEach(clearInterval); timers={}; }
 
+// ============ WAKE LOCK ============
+// A phone that sleeps mid-simmer takes the timers with it. Hold a screen wake
+// lock while the page is visible; the browser drops it on lock/tab-switch, so
+// re-request whenever we become visible again. Unsupported browsers (or a
+// low-battery denial) fail silently — the game works, the screen just naps.
+let wakeLock = null;
+async function keepAwake(){
+  if(!('wakeLock' in navigator)) return;
+  try{ wakeLock = await navigator.wakeLock.request('screen'); }
+  catch(e){ /* denied — nothing to do, and nothing broken */ }
+}
+document.addEventListener('visibilitychange', ()=>{
+  if(document.visibilityState === 'visible') keepAwake();
+});
+
 // ============ FX ============
 let ac;
 function audio(){ if(!ac){ try{ ac = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} }
@@ -568,6 +583,7 @@ function toast(msg){ const t=document.getElementById('toast');
 
 document.getElementById('mapBtn').onclick = ()=>{ stopTimers(); view='map'; render(); };
 restore();   // lock screen, refresh, tab kill — come back to exactly where you were
+keepAwake(); // wakeLock.request needs visibility, not a tap — safe to call at boot
 render();
 </script>
 </body>
