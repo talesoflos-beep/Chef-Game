@@ -20,6 +20,7 @@
 - Dog-safe = **no onion, no garlic, no salt, no oil, no spices.**
 - **Avocado and imitation crab are both off-limits.** This is why the dog does not appear in Act 1.
 - Method: reserve a plain unseasoned portion **before** seasoning anything. Poach plain chicken in the vegetable steaming water.
+- **Poach time: ~8 min for a thin cutlet** at a simmer. Doneness is the test, not the clock: **white all the way through, no pink** — shredding it exposes the middle, so check there. *(Decided 2026-07-09, owner-delegated; a ½-inch cutlet poaches through in 8–10 min.)*
 
 ---
 
