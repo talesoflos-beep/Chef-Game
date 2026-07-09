@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Kitchen Quest II — The Sushi Session</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --char:#141110; --char2:#1e1917; --char3:#282220; --char4:#332b27;
+    --ember:#ef6a2a; --ember-d:#b8461a;
+    --flame:#4db8e8; --cream:#f4ead9; --ash:#968a7f;
+    --sage:#86b06b; --toss:#e0564f; --nori:#4a7a5c; --gold:#e8b54d;
+    --line:rgba(244,234,217,.11);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    background:radial-gradient(130% 90% at 50% -15%, #2b211c 0%, var(--char) 58%) fixed, var(--char);
+    color:var(--cream); line-height:1.55; min-height:100vh;
+    padding:0 14px calc(48px + env(safe-area-inset-bottom));
+    -webkit-font-smoothing:antialiased; overflow-x:hidden;
+  }
+  .wrap{max-width:580px;margin:0 auto}
+  img{max-width:100%;display:block}
+  button{font:inherit}
+
+  /* ============ HUD ============ */
+  #hud{position:sticky;top:0;z-index:30;padding:14px 0 10px;
+    background:linear-gradient(180deg,var(--char) 72%,rgba(20,17,16,0));display:none}
+  #hud.on{display:block}
+  .hudrow{display:flex;align-items:center;gap:12px}
+  .lvl{font-family:'Space Mono',monospace;font-size:.58rem;letter-spacing:.14em;color:var(--ash);white-space:nowrap}
+  .lvl b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:1.15rem;color:var(--cream);letter-spacing:-.01em}
+  .xpbar{flex:1;height:9px;border-radius:99px;background:var(--char3);overflow:hidden;position:relative;border:1px solid var(--line)}
+  .xpfill{height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--ember-d),var(--ember),var(--gold));
+    transition:width .7s cubic-bezier(.2,.8,.3,1);box-shadow:0 0 12px rgba(239,106,42,.5)}
+  .xpnum{font-family:'Space Mono',monospace;font-size:.72rem;color:var(--ember);white-space:nowrap}
+  .hudmeta{display:flex;justify-content:space-between;margin-top:6px;font-family:'Space Mono',monospace;font-size:.62rem;color:var(--ash)}
+  .menubtn{background:none;border:1px solid var(--line);color:var(--ash);border-radius:8px;
+    padding:5px 9px;font-size:.66rem;cursor:pointer;font-family:'Space Mono',monospace}
+  .menubtn:hover{color:var(--cream);border-color:var(--ash)}
+
+  /* ============ TITLE ============ */
+  .title{text-align:center;padding:26px 0 10px;animation:fade .6s both}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .titleart{border-radius:16px;overflow:hidden;border:2px solid var(--char4);box-shadow:0 18px 50px rgba(0,0,0,.6);margin-bottom:22px}
+  .titleart img{width:100%}
+  .title h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:2rem;line-height:1;letter-spacing:-.03em;margin-bottom:6px}
+  .title h1 em{font-style:normal;color:var(--ember);display:block;font-size:1.15rem;margin-top:8px;letter-spacing:0}
+  .title p{color:var(--ash);font-size:.9rem;max-width:400px;margin:14px auto 0}
+  .press{margin-top:26px;font-family:'Space Mono',monospace;font-size:.78rem;color:var(--gold);letter-spacing:.18em;
+    animation:blink 1.5s steps(2,end) infinite}
+  @keyframes blink{0%,49%{opacity:1}50%,100%{opacity:.25}}
+  .startbtn{margin-top:16px}
+
+  /* ============ MAP ============ */
+  .map{animation:fade .45s both}
+  .maphead{text-align:center;margin:8px 0 20px}
+  .maphead h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.5rem;letter-spacing:-.02em}
+  .maphead p{color:var(--ash);font-size:.83rem;margin-top:4px}
+  .actlabel{display:flex;align-items:center;gap:10px;margin:22px 0 12px}
+  .actlabel span{font-family:'Space Mono',monospace;font-size:.62rem;letter-spacing:.16em;white-space:nowrap}
+  .actlabel.a1 span{color:#9fcbaf} .actlabel.a2 span{color:#f3b183}
+  .actlabel hr{flex:1;border:none;border-top:1px solid var(--line)}
+  .node{display:flex;align-items:center;gap:14px;padding:14px;border-radius:14px;margin-bottom:9px;
+    border:1px solid var(--line);background:var(--char2);cursor:pointer;transition:.16s;text-align:left;width:100%;color:inherit}
+  .node:hover:not(.locked){border-color:var(--ember);transform:translateX(3px)}
+  .node.locked{opacity:.36;cursor:not-allowed}
+  .node.cleared{border-color:rgba(134,176,107,.45)}
+  .node.current{border-color:var(--ember);box-shadow:0 0 0 1px var(--ember),0 8px 24px rgba(239,106,42,.16)}
+  .nodeicon{flex:none;width:44px;height:44px;border-radius:11px;display:grid;place-items:center;font-size:1.25rem;background:var(--char3)}
+  .node.cleared .nodeicon{background:rgba(134,176,107,.18)}
+  .node.current .nodeicon{background:rgba(239,106,42,.18);animation:bob 2s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+  .nodetext b{display:block;font-size:.96rem;font-weight:600}
+  .nodetext span{font-size:.75rem;color:var(--ash)}
+  .nodestat{margin-left:auto;font-family:'Space Mono',monospace;font-size:.66rem;color:var(--ash);white-space:nowrap}
+  .node.cleared .nodestat{color:var(--sage)}
+
+  /* ============ STATION ============ */
+  .stage{animation:slidein .4s cubic-bezier(.2,.7,.3,1) both}
+  @keyframes slidein{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  .crumb{display:flex;align-items:center;gap:8px;margin:6px 0 12px;flex-wrap:wrap}
+  .chip{font-family:'Space Mono',monospace;font-size:.58rem;font-weight:700;letter-spacing:.14em;padding:4px 8px;border-radius:6px;text-transform:uppercase}
+  .c-pot{background:rgba(77,184,232,.16);color:var(--flame)}
+  .c-pan{background:rgba(239,106,42,.18);color:var(--ember)}
+  .c-board{background:rgba(150,138,127,.2);color:var(--cream)}
+  .c-roll{background:rgba(74,122,92,.3);color:#a9d5ba}
+  .c-check{background:rgba(224,86,79,.18);color:var(--toss)}
+  .c-store{background:rgba(134,176,107,.18);color:var(--sage)}
+  .stitle{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.75rem;letter-spacing:-.025em;line-height:1.05;margin-bottom:8px}
+  .sblurb{color:var(--ash);font-size:.9rem;margin-bottom:18px}
+
+  /* lesson card w/ image */
+  .lesson{border-radius:16px;overflow:hidden;border:1px solid rgba(77,184,232,.3);background:rgba(77,184,232,.05);margin-bottom:18px}
+  .lesson figure img{width:100%;border-bottom:1px solid rgba(77,184,232,.25)}
+  .lessonbody{padding:14px 15px}
+  .lessonbody b{display:block;font-family:'Space Mono',monospace;font-size:.62rem;letter-spacing:.14em;color:var(--flame);margin-bottom:6px}
+  .lessonbody p{font-size:.88rem}
+
+  /* step counter */
+  .stepbar{display:flex;gap:4px;margin-bottom:14px}
+  .sdot{flex:1;height:4px;border-radius:99px;background:var(--char3)}
+  .sdot.done{background:var(--sage)}
+  .sdot.now{background:var(--ember)}
+  .stepnum{font-family:'Space Mono',monospace;font-size:.62rem;color:var(--ash);letter-spacing:.1em;margin-bottom:8px}
+
+  .stepcard{background:var(--char3);border:1px solid var(--line);border-radius:16px;padding:20px 18px;
+    animation:pop2 .32s cubic-bezier(.2,.9,.3,1) both}
+  @keyframes pop2{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:none}}
+  .stepcard .action{font-size:1.06rem;font-weight:600;line-height:1.45}
+  .stepcard .action b{color:var(--ember);font-weight:700}
+  .stepcard .why{margin-top:12px;padding-top:12px;border-top:1px solid var(--line);font-size:.85rem;color:var(--ash)}
+  .stepcard .why b{color:var(--cream)}
+  .warn{margin-top:12px;padding:10px 12px;border-radius:10px;background:rgba(224,86,79,.1);border-left:3px solid var(--toss);font-size:.84rem}
+  .warn b{color:var(--toss)}
+
+  /* timer */
+  .timerbox{margin-top:16px;background:var(--char2);border:1px solid var(--line);border-radius:14px;padding:14px;
+    display:flex;align-items:center;gap:14px;cursor:pointer;transition:.18s;-webkit-tap-highlight-color:transparent}
+  .timerbox:hover{border-color:rgba(77,184,232,.45)}
+  .dial{flex:none;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;
+    background:radial-gradient(circle,var(--char3) 0 57%,transparent 58%),conic-gradient(var(--flame) var(--p,0%),rgba(244,234,217,.08) 0)}
+  .timerbox.lit .dial{background:radial-gradient(circle,var(--char3) 0 57%,transparent 58%),conic-gradient(var(--ember) var(--p,0%),rgba(244,234,217,.08) 0);
+    box-shadow:0 0 18px rgba(239,106,42,.35)}
+  .timerbox.rang .dial{background:radial-gradient(circle,var(--char3) 0 57%,transparent 58%),var(--sage)}
+  .readout{font-family:'Space Mono',monospace;font-weight:700;font-size:.86rem}
+  .tlabel{font-size:.78rem;color:var(--ash)}
+  .tlabel b{display:block;color:var(--cream);font-size:.88rem}
+  .timerbox.ringing{animation:shake .4s ease-in-out infinite}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+
+  /* boss quiz */
+  .boss{animation:slidein .4s both}
+  .bosshead{text-align:center;margin-bottom:18px}
+  .bosshead .skull{font-size:2.6rem;animation:bob 1.8s ease-in-out infinite}
+  .bosshead h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.5rem;margin-top:6px}
+  .bosshead p{color:var(--ash);font-size:.8rem;font-family:'Space Mono',monospace;letter-spacing:.08em}
+  .qcard{background:var(--char3);border:1px solid rgba(232,181,77,.35);border-radius:16px;padding:20px 18px}
+  .qcard>p{font-size:1rem;font-weight:500;margin-bottom:14px}
+  .qopts{display:flex;flex-direction:column;gap:9px}
+  .qopt{border:1px solid var(--line);background:var(--char2);border-radius:11px;padding:13px 14px;cursor:pointer;
+    text-align:left;color:var(--cream);font-size:.9rem;transition:.15s}
+  .qopt:hover:not(:disabled){border-color:var(--gold)}
+  .qopt.right{border-color:var(--sage);background:rgba(134,176,107,.16)}
+  .qopt.wrong{border-color:var(--toss);background:rgba(224,86,79,.12);animation:shake .35s}
+  .qexplain{margin-top:14px;padding:13px;border-radius:11px;background:rgba(134,176,107,.09);
+    border-left:3px solid var(--sage);font-size:.86rem;color:var(--ash);display:none}
+  .qexplain.show{display:block;animation:pop2 .3s both}
+  .qexplain b{color:var(--sage)}
+
+  /* buttons */
+  .cta{width:100%;margin-top:18px;padding:16px;border:none;border-radius:13px;cursor:pointer;
+    font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.02rem;letter-spacing:-.01em;
+    background:linear-gradient(180deg,var(--ember),var(--ember-d));color:#180d06;
+    box-shadow:0 6px 20px rgba(239,106,42,.28);transition:.15s}
+  .cta:hover{filter:brightness(1.08)}
+  .cta:active{transform:translateY(1px)}
+  .cta:disabled{background:var(--char3);color:var(--ash);box-shadow:none;cursor:not-allowed}
+  .cta.ghost{background:none;border:1px solid var(--line);color:var(--ash);box-shadow:none;font-weight:600;font-size:.88rem;padding:12px}
+  .cta.ghost:hover{color:var(--cream);border-color:var(--ash)}
+  .btnrow{display:flex;gap:10px;margin-top:10px}
+  .btnrow .cta{margin-top:0}
+
+  /* toast + flash */
+  #flash{position:fixed;inset:0;pointer-events:none;z-index:60;display:grid;place-items:center;opacity:0}
+  #flash.go{animation:flashk 1.1s ease-out}
+  #flash span{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.9rem;color:var(--gold);
+    text-shadow:0 4px 40px rgba(232,181,77,.55);text-align:center;padding:0 20px}
+  @keyframes flashk{0%{opacity:0;transform:scale(.7)}22%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.08)}}
+  #toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(80px);z-index:55;
+    background:var(--char4);border:1px solid var(--gold);color:var(--gold);padding:10px 18px;border-radius:99px;
+    font-family:'Space Mono',monospace;font-size:.74rem;opacity:0;transition:.35s;pointer-events:none;white-space:nowrap}
+  #toast.on{transform:translateX(-50%) translateY(0);opacity:1}
+
+  /* victory */
+  .victory{text-align:center;padding:24px 0 10px;animation:fade .5s both}
+  .trophy{font-size:3.6rem;animation:pop3 .6s cubic-bezier(.2,1.7,.4,1) both}
+  @keyframes pop3{from{transform:scale(0) rotate(-14deg)}to{transform:scale(1)}}
+  .victory h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.85rem;margin:10px 0 8px;letter-spacing:-.02em}
+  .victory>p{color:var(--ash);font-size:.92rem;max-width:400px;margin:0 auto}
+  .vstats{display:flex;gap:9px;justify-content:center;margin:20px 0 0;flex-wrap:wrap}
+  .vstat{background:var(--char3);border:1px solid var(--line);border-radius:12px;padding:12px 15px;min-width:88px}
+  .vstat b{display:block;font-family:'Space Mono',monospace;font-size:1.25rem;color:var(--ember)}
+  .vstat span{font-size:.62rem;color:var(--ash);text-transform:uppercase;letter-spacing:.09em}
+  .recap{text-align:left;background:var(--char3);border:1px solid var(--line);border-radius:15px;padding:16px 18px;margin-top:18px}
+  .recap h3{font-family:'Bricolage Grotesque',sans-serif;font-size:.95rem;margin-bottom:10px}
+  .recap div{font-size:.85rem;color:var(--ash);padding:6px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px}
+  .recap div:last-child{border:none}
+  .recap em{color:var(--cream);font-style:normal;font-weight:600;text-align:right}
+
+  @media (prefers-reduced-motion: reduce){*{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+</head>
+<body>
+<div id="flash"><span></span></div>
+<div id="toast"></div>
+
+<div class="wrap">
+  <div id="hud">
+    <div class="hudrow">
+      <div class="lvl">LEVEL<b id="lvlNum">1</b></div>
+      <div class="xpbar"><div class="xpfill" id="xpfill"></div></div>
+      <div class="xpnum" id="xpnum">0 XP</div>
+    </div>
+    <div class="hudmeta">
+      <span id="hudLoc"></span>
+      <button class="menubtn" id="mapBtn">◄ MAP</button>
+    </div>
+  </div>
+  <main id="screen"></main>
+</div>
+
+<script>
+// ===========================================================================
+//  KITCHEN QUEST II — THE SUSHI SESSION
+//  Ratios verified 2026-07-09 against published recipes.
+//  Dog does NOT appear in Act 1 (sushi). Dog portions only in Act 2.
+// ===========================================================================
+
+const ART = {
+  title: "https://d8j0ntlcm91z4.cloudfront.net/user_3EylphvKs2oAnPWYNSj56iFecDN/hf_20260709_173935_8495c97f-d860-4e49-9775-781cf0a20d40.png",
+  roll:  "https://d8j0ntlcm91z4.cloudfront.net/user_3EylphvKs2oAnPWYNSj56iFecDN/hf_20260709_173914_494b2dd8-a730-468f-be82-501b82428780.png",
+  cutlet:"https://d8j0ntlcm91z4.cloudfront.net/user_3EylphvKs2oAnPWYNSj56iFecDN/hf_20260709_173924_f714dd40-bd78-43b7-8206-3d8a3835e7dd.png",
+  // Two more were generated (rice-folding + pan-doneness). Paste their URLs here
+  // from your Higgsfield library and they'll appear automatically.
+  rice: "",
+  pan:  ""
+};
+
+const STATIONS = [
+  {
+    act:1, icon:"🎒", name:"Before you leave", chip:"board", chipC:"c-board", xp:100,
+    blurb:"Three things happen now or tonight falls apart. Two minutes of work, then you're free.",
+    lesson:{title:"THE ONE RULE OF TODAY", body:"Cold stays cold. Frozen thaws in the fridge, never on the counter — the outside enters the bacteria zone hours before the middle softens. And you shop <b>before</b> you roll, because the nori can't be at the store while you're at his kitchen table."},
+    steps:[
+      {a:"<b>Chicken breasts: freezer → fridge. Right now.</b>", why:"They'll thaw slowly and safely across the afternoon while you're out. This is the single step that can't be recovered later — everything else in this game forgives delay."},
+      {a:"Pack the travel kit: <b>sushi rice, soy sauce, sesame oil, sugar, salt, one hot sauce.</b>", why:"You already own all of it. Bringing it means the only things you buy are the things you genuinely don't have."},
+      {a:"Add an <b>insulated bag with an ice pack</b> to the car.", why:"It's July. The crab, spring mix and berries ride home with you after the hangout — that's a few hours of warm car without it."},
+      {a:"At the store, sushi aisle: <b>nori, unseasoned rice vinegar, cucumber, 2 ripe avocados, imitation crab.</b>", why:"Two label checks. <b>Vinegar:</b> unseasoned = 0 calories on the panel. If it has calories, sugar and salt are already in it and you'd double-season. <b>Crab:</b> egg white is a common binder in surimi — read the ingredients, your reflux depends on it."},
+      {a:"Same trip, the week's food: <b>broccoli, 2 bell peppers, spring mix, old-fashioned rolled oats, unsweetened almond or oat milk, bananas, berries, apples.</b>", why:"Notice what's not on this list: chicken and rice. You already own 6.5 lb of frozen chicken and two open containers of rice. That's the whole point of the inventory doc."},
+      {a:"Cold items into the cooler bag. Head to your friend's.", why:"Act 1 starts when you walk in the door."}
+    ]
+  },
+  {
+    act:1, icon:"🍚", name:"Sushi rice", chip:"pot", chipC:"c-pot", xp:180,
+    blurb:"The rice is the sushi. Sushi bars guard the rice recipe harder than the fish supplier. Nail this and the rest is assembly.",
+    lesson:{img:"rice", title:"WARM TO SEASON, COOL TO ROLL", body:"Warm rice drinks the vinegar in; cold rice just gets wet. But <b>hot</b> rice tears nori and steams it limp. So: season warm, then cool to room temp before rolling. The classic seasoning ratio is 4 parts vinegar : 2 sugar : 1 salt — yours tonight is 4 tbsp / 1½ tbsp / 1 tsp."},
+    steps:[
+      {a:"Rinse <b>1½ cups sushi rice</b> in a strainer until the water runs mostly clear. Three rinses minimum.", why:"You're washing off loose surface starch. Skip it and the grains glue into paste instead of clinging like sushi rice should."},
+      {a:"Rice + <b>1¾ cups water</b> in a pot. Lid on. Bring to a boil.", why:"Slightly less water than you'd use for a fluffy side dish — sushi rice wants to be a touch firm, because it's about to absorb 4 tablespoons of vinegar."},
+      {a:"Drop to the <b>lowest heat, 15 minutes. Do not lift the lid.</b>", why:"The steam trapped under that lid is doing the cooking. Every peek releases it and you're cooking a different dish than the one the timer was set for.", timer:{label:"Simmer, lid on",sec:900}},
+      {a:"Heat off. <b>Lid still on. Rest 10 minutes.</b> Then fluff.", why:"The residual steam finishes the grains at the top of the pot, which are always a little behind.", timer:{label:"Rest off-heat",sec:600}},
+      {a:"Stir <b>4 tbsp rice vinegar + 1½ tbsp sugar + 1 tsp salt</b> in a cup until dissolved.", why:"Ten seconds in the microwave dissolves it faster. Undissolved sugar means gritty rice."},
+      {a:"Pour it over the warm rice and <b>fold with a cutting motion</b> — slice down through, lift, turn.", why:"Stirring crushes the grains into mush. Cutting separates them while coating each one. This is the single most-skipped technique in home sushi."},
+      {a:"Spread the rice flat and let it cool to <b>room temperature</b>.", why:"This is your window to cut fillings. Fan it if you're impatient. Room temp is the goal — not cold, not warm."}
+    ]
+  },
+  {
+    act:1, icon:"🥒", name:"Cut the fillings", chip:"board", chipC:"c-board", xp:120,
+    blurb:"While the rice cools. One shape for everything: long, thin, pencil-width.",
+    lesson:{title:"WHY PENCIL-WIDTH", body:"Fat fillings force a fat roll, and fat rolls burst at the seam. Thin uniform sticks roll tight and slice clean. Bonus: <b>imitation crab is already fully cooked</b> — it goes from package to roll with zero heat. That's why tonight needed no thawing."},
+    steps:[
+      {a:"Cucumber: halve lengthwise, <b>scrape the seeds out with a spoon</b>, then cut into pencil sticks.", why:"The seed core is water. Leave it in and it weeps into the rice, and a soggy roll falls apart in your hand."},
+      {a:"Avocado: halve, pit, peel, slice into thin strips.", why:"A ripe one yields slightly under your thumb. Rock-hard won't slice; mush won't hold a line."},
+      {a:"Crab sticks: pull into strips, or leave them whole.", why:"They already come in exactly the shape you need. Doing less here is correct."},
+      {a:"Optional spicy crab: shred a few sticks, mix with <b>hot sauce + 1 tsp sesame oil.</b>", why:"That's a spicy roll with no mayo, no egg, no dairy — a real constraint-dodge, not a compromise. Sesame oil does the richness that mayo usually does."}
+    ]
+  },
+  {
+    act:1, icon:"🍣", name:"Roll & slice", chip:"roll", chipC:"c-roll", xp:240,
+    blurb:"The main event. Your first roll will be ugly. Your third will be decent. Your sixth goes on a plate like you meant it. That's the real curve — don't quit at roll two.",
+    lesson:{img:"roll", title:"THE FOUR MOVES", body:"<b>SPREAD</b> rice over the bottom two-thirds, top inch left bare · <b>FILL</b> one modest line across the near edge · <b>ROLL</b> away from you, tucking with fingertips · <b>SLICE</b> with a wet knife, every single cut. The bare strip of nori is the glue — a dab of water seals the whole roll shut."},
+    steps:[
+      {a:"Mat down. Nori <b>shiny side down</b>, rough side up.", why:"The rough side grips rice. Shiny side out gives you that clean dark exterior. No mat? Plastic wrap over a folded kitchen towel works fine."},
+      {a:"Keep a bowl of water beside you. <b>Wet your fingers.</b>", why:"Wet hands are the entire anti-stick strategy. Re-wet constantly — the moment rice sticks to you instead of the nori, you're fighting the roll."},
+      {a:"Spread rice over the bottom <b>two-thirds</b>, about ¼ inch thick. <b>Leave the top inch bare.</b>", why:"Thin. Thinner than instinct says. The bare inch is not optional — it's the seam that seals the roll."},
+      {a:"Lay <b>one line</b> of filling across the near edge. Crab + cucumber, or avocado + cucumber.", why:"Underfill on purpose. Overfilling is the number one reason a first roll bursts open, and it's the hardest urge to resist."},
+      {a:"Lift the mat edge and <b>roll away from you, tucking the filling in with your fingertips</b> as the nori comes over.", why:"The tuck is what makes it tight. Roll loose and you get a hollow tube that collapses under the knife."},
+      {a:"Dab water on the bare strip. Finish the roll. <b>Squeeze gently</b> along its length.", why:"Gently. You're sealing, not compressing. Too much pressure and the filling extrudes out the ends."},
+      {a:"<b>Wet the knife before every cut.</b> Halve the roll, then each half into thirds.", why:"A dry blade drags the rice and shreds the nori. Six clean pieces per roll. Wipe and re-wet between each cut, not once at the start."},
+      {a:"Repeat until the rice is gone. Soy sauce to dip. Eat, hang out, then head home for Act 2.", why:"You made sushi. That's a real skill you didn't have this morning."}
+    ],
+    boss:{
+      q:"Your roll keeps splitting open along the seam. What's the most likely cause?",
+      opts:["The rice was too cold to stick","Too much filling, and no bare nori strip to seal against","You rolled toward yourself instead of away"],
+      right:1,
+      explain:"Overfilling is the rookie killer — the seam physically can't close around a fat core. Keep the filling to one modest line, leave that top inch of nori bare, and wet it before the final turn."
+    }
+  },
+  {
+    act:2, icon:"🏠", name:"Home. Thaw check.", chip:"check", chipC:"c-check", xp:140,
+    blurb:"You're back and fed. The fridge has thawed chicken waiting. This is the 45 minutes that feeds you through Saturday.",
+    lesson:{title:"WHY TONIGHT AND NOT TOMORROW", body:"Last time a fun night sat in front of a cook session, the cook session lost — Tex-Mex night has been carried forward for five weeks. Cooked chicken keeps 3–4 days, so Thursday night covers Fri and Sat cleanly. Tomorrow-night cooking doesn't. Forty-five minutes, and you're done."},
+    steps:[
+      {a:"Press the thickest part of a breast. <b>Soft through = ready.</b>", why:"Still icy in the middle? Seal in a zip bag and submerge in cold water 20–30 min. Never warm water, never the counter."},
+      {a:"After a cold-water thaw, <b>cook it today.</b> Don't refreeze it raw.", why:"Cold-water thawing pushes the surface into a temperature range where refreezing raw is a gamble. Cooking it resets the clock."},
+      {a:"Groceries away, cold stuff into the fridge. Out on the counter: <b>one pot with lid, one pan, one board, one knife.</b>", why:"Your standing constraint. Anything that needs a fourth vessel gets redesigned, not accommodated."}
+    ]
+  },
+  {
+    act:2, icon:"🔪", name:"Board & cutlets", chip:"board", chipC:"c-board", xp:190,
+    blurb:"Veg first on the clean board. Raw meat last. Wash immediately after. Same law every single time.",
+    lesson:{img:"cutlet", title:"WHY CUTLETS, NOT WHOLE BREASTS", body:"A chicken breast is a wedge. The thin end is sawdust by the time the thick end is safe to eat — that's why breast has a reputation for being dry, and it's a geometry problem, not a cooking problem. Slice it horizontally into two even cutlets and the whole thing finishes at once. <b>Flat hand on top, knife parallel to the board, slow saw through the middle.</b>"},
+    steps:[
+      {a:"Broccoli into florets, peppers into strips. Into a bowl, off the board.", why:"Veg touches the clean board first. Once raw chicken touches it, nothing raw-eaten goes back on until it's washed."},
+      {a:"Pat the breasts dry with paper towel.", why:"Surface water steams instead of browns. Dry meat is the whole secret to a golden crust."},
+      {a:"<b>Hand flat on top. Knife parallel to the board. Slice each breast horizontally into two thin cutlets.</b>", why:"Go slow — this is a sawing motion, not a chop. Four breasts become eight cutlets. Check the tutorial image above if the angle isn't clicking."},
+      {a:"🐶 <b>Set one plain cutlet aside, unseasoned.</b>", why:"His portion. It gets poached in the veg water two stations from now — no salt, no oil, no spices, no onion or garlic."},
+      {a:"Season the rest on a plate: <b>olive oil, salt, pepper, garlic powder, cumin, chili powder.</b>", why:"Cumin and chili tie the chicken to the Tex-Mex beans coming up. One seasoning, two dishes."},
+      {a:"<b>Wash the board, the knife, and your hands. Now.</b>", why:"Non-negotiable, and it's easier now than after you've touched three other things."}
+    ]
+  },
+  {
+    act:2, icon:"🔥", name:"Rice & the pan", chip:"pan", chipC:"c-pan", xp:190,
+    blurb:"Pot and pan run in parallel. The rice is hands-off. The pan needs you standing there.",
+    lesson:{img:"pan", title:"DONENESS BEATS THE CLOCK", body:"Times are a guide; doneness is the test. Cutlets are done when there's <b>no pink in the center and the juices run clear</b> — 165°F if you have a thermometer. Thin cutlets hit that fast and then dry out about ninety seconds later, so check early. And don't crowd the pan: crammed meat steams in its own moisture instead of browning."},
+    steps:[
+      {a:"<b>Pot:</b> 1 cup extra long grain rice + 1¾ cups water + pinch of salt. Boil → lowest heat, 15 min, lid on → off, rest 5 → fluff.", why:"Burning down Cabinet 1, not the basmati. Basmati is your lower-glycemic rice — save it.", timer:{label:"Rice simmer",sec:900}},
+      {a:"🐶 <b>Scoop out a plain portion of rice before anything is added.</b>", why:"Plain rice is dog-safe. The moment oil or seasoning touches it, it isn't."},
+      {a:"<b>Pan:</b> medium-high, thin film of oil. Cutlets in — <b>don't crowd them.</b> Two batches of four.", why:"Gaps between the cutlets let moisture escape as steam. Crammed together, they poach in their own liquid and go gray."},
+      {a:"<b>3–4 minutes, first side. Don't move them.</b>", why:"Moving the meat interrupts the crust forming. Leave it alone and it releases from the pan on its own when it's ready.", timer:{label:"Side one",sec:210}},
+      {a:"Flip once. <b>3–4 minutes, second side.</b>", why:"Thin cutlets cook fast — this is why we sliced them. A whole breast would need nearly double.", timer:{label:"Side two",sec:210}},
+      {a:"Cut into the thickest one. <b>No pink, clear juices → out to a container.</b> Repeat for batch two.", why:"When in doubt, cut and look. A thermometer says 165°F; your eyes say the same thing for free."}
+    ],
+    boss:{
+      q:"You crammed all eight cutlets into the pan at once. What actually happens?",
+      opts:["They cook faster because the pan is full","They release moisture, steam each other, and turn gray instead of browning","Nothing — crowding only matters for vegetables"],
+      right:1,
+      explain:"A crowded pan traps the moisture the meat releases. That water has to boil off before browning can start, so you get pale, steamed, rubbery chicken. Gaps between pieces let the steam escape. Two batches beats one crowded one, every time."
+    }
+  },
+  {
+    act:2, icon:"🫘", name:"Tex-Mex beans & veg", chip:"pot", chipC:"c-pot", xp:180,
+    blurb:"The bean night you've carried since before vacation. Five weeks. It happens tonight, in the chicken pan, for free.",
+    lesson:{title:"FOND IS FREE FLAVOR", body:"Those browned bits welded to the pan after the chicken? That's <b>fond</b> — concentrated roasted flavor. A splash of broth dissolves it and carries it into the beans. This is precisely why you don't wash the pan between the chicken and the beans. Washing it is throwing away the best ingredient in the dish."},
+    steps:[
+      {a:"<b>Pan, unwashed.</b> Drain and rinse <b>1 can small red beans.</b>", why:"Rinsing cuts the tinny canning liquid and a chunk of the sodium."},
+      {a:"Beans into the hot pan with a <b>splash of chicken broth, 1 tsp cumin, 1 tsp chili powder, pinch of salt.</b>", why:"You'll hear it hiss. That's the liquid hitting the fond."},
+      {a:"<b>Scrape the brown bits up</b> with a wooden spoon as it simmers. 6–8 minutes, until it thickens.", why:"Watch the pan go from brown-speckled to clean as the flavor moves into the beans. That's the whole trick, visible.", timer:{label:"Beans simmer",sec:420}},
+      {a:"<b>Pot:</b> rice is out. One inch of water, bring to a simmer, broccoli + peppers in, lid on <b>4–5 min.</b>", why:"Done = bright green, and a fork meets slight resistance. Past that it goes olive-drab and floppy.", timer:{label:"Veg steam",sec:300}},
+      {a:"🐶 <b>Poach the plain cutlet in that same water, ~8 min, until white through. Shred it.</b>", why:"Plain rice + plain chicken. His whole dinner, cooked in water you were already boiling.", timer:{label:"Dog's chicken",sec:480}},
+      {a:"Portion it out. <b>Fri:</b> cutlets + beans + rice, Amogia sauce on top. <b>Sat:</b> cutlets + veg + spring mix with the Italian dressing and croutons.", why:"Amogia has ~2 weeks left and the dressing expires 7/25. Both clocks get burned down this week instead of quietly running out."},
+      {a:"Cool ~20 min until just warm, <b>then</b> lid and fridge.", why:"Lidding hot food traps steam and warms the whole fridge. Reheat later until steaming hot all the way through — not just warm."}
+    ]
+  },
+  {
+    act:2, icon:"🏆", name:"Snack lab & breakfast", chip:"store", chipC:"c-store", xp:220, final:true,
+    blurb:"Boss level. Set up the week while the oven's already warm. One snack experiment. One breakfast system. Not three of each.",
+    lesson:{title:"THE CHICKPEA SCIENCE", body:"Moisture is the enemy of crunch — that's the entire recipe. The drier the chickpeas go in, the crispier they come out, which is why the towel-rub matters more than any seasoning you choose. 400°F. And they keep crisping <b>as they cool</b>, so never judge them straight out of the oven."},
+    steps:[
+      {a:"Oven to <b>400°F.</b> Drain and rinse <b>one can of chickpeas.</b>", why:"You own four cans. They've never been opened. This is snack slot 3, test number one."},
+      {a:"<b>Rub them dry on a kitchen towel.</b> Really dry.", why:"Loose skins coming off is a bonus, not a problem — skins hold moisture. Don't chase every one, just rub hard."},
+      {a:"Toss with <b>1–2 tsp olive oil + salt.</b> Sheet pan, single layer.", why:"Too much oil makes them greasy-soft instead of crisp. A light coat is all you want."},
+      {a:"<b>25–30 minutes. Shake the pan halfway.</b> Done when they rattle.", why:"You'll hear popping. That's water leaving. That's the sound of it working.", timer:{label:"Roast chickpeas",sec:1650}},
+      {a:"Season <b>out</b> of the oven: Tajín or paprika. Cool 10 minutes.", why:"Salt and wet seasonings pull moisture to the surface during baking, undoing your work. Season after."},
+      {a:"Store in a jar with the <b>lid loose.</b> Good 4–5 days.", why:"Airtight traps humidity and they go soft by morning. Let them breathe."},
+      {a:"<b>Overnight oats:</b> ½ cup rolled oats + ½ cup almond milk + pinch of salt + cinnamon. Jar, lid, fridge. Make two or three.", why:"The 1:1 rule. Equal parts oats and liquid — more and it's soup, less and it's cement."},
+      {a:"Morning: top with banana or berries. <b>This replaces snack slot 1, it doesn't stack on top of it.</b>", why:"You already eat three daytime snacks plus one to three after dinner. Adding a meal while trying to lose weight is a different decision than swapping one."}
+    ],
+    boss:{
+      q:"Next morning, your chickpeas are soft instead of crunchy. Most likely culprit?",
+      opts:["The oven wasn't hot enough","They went in wet, or into an airtight jar afterward","You seasoned them after baking instead of before"],
+      right:1,
+      explain:"Moisture, on both ends. Wet going in means they steam rather than roast; an airtight jar traps humidity that softens them overnight. Towel-dry hard before, lid loose after. Seasoning after baking is actually the correct move — that one was a trap."
+    }
+  }
+];
+
+// ============ STATE ============
+let view = 'title';       // title | map | station | boss | victory
+let si = 0;               // station index
+let step = 0;             // step index within station
+let xp = 0;
+const cleared = STATIONS.map(()=>false);
+const bossDone = STATIONS.map(s=>!s.boss);
+const XP_PER_LEVEL = 400;
+
+const screen = document.getElementById('screen');
+const hud = document.getElementById('hud');
+
+function level(){ return Math.floor(xp / XP_PER_LEVEL) + 1; }
+function levelPct(){ return ((xp % XP_PER_LEVEL) / XP_PER_LEVEL) * 100; }
+
+function syncHUD(){
+  if(view==='title'){ hud.classList.remove('on'); return; }
+  hud.classList.add('on');
+  document.getElementById('lvlNum').textContent = level();
+  document.getElementById('xpfill').style.width = levelPct()+'%';
+  document.getElementById('xpnum').textContent = xp+' XP';
+  const s = STATIONS[si];
+  document.getElementById('hudLoc').textContent =
+    view==='map' ? 'KITCHEN MAP' :
+    view==='victory' ? 'QUEST COMPLETE' :
+    `ACT ${s.act} · ${s.name.toUpperCase()}`;
+  document.getElementById('mapBtn').style.visibility = (view==='map'||view==='victory')?'hidden':'visible';
+}
+
+function addXP(n, why){
+  const before = level();
+  xp += n; syncHUD();
+  toast(`+${n} XP · ${why}`);
+  if(level() > before) setTimeout(()=>flash(`LEVEL ${level()}`), 700);
+}
+
+// ============ RENDER ============
+function render(){
+  syncHUD();
+  if(view==='title') return renderTitle();
+  if(view==='map') return renderMap();
+  if(view==='boss') return renderBoss();
+  if(view==='victory') return renderVictory();
+  return renderStation();
+}
+
+function renderTitle(){
+  screen.innerHTML = `<div class="title">
+    <div class="titleart"><img src="${ART.title}" alt="Kitchen Quest II title art"></div>
+    <h1>Kitchen Quest II<em>The Sushi Session</em></h1>
+    <p>Two acts. Nine stations. You'll roll your first sushi, rescue six pounds of freezer chicken, and finally cook the bean night you've been carrying for five weeks.</p>
+    <div class="press">▸ PRESS START ◂</div>
+    <button class="cta startbtn" id="startBtn">Begin the quest</button>
+  </div>`;
+  document.getElementById('startBtn').onclick = ()=>{ audio(); view='map'; render(); };
+}
+
+function renderMap(){
+  let html = `<div class="map"><div class="maphead">
+    <h2>Kitchen Map</h2><p>Tap the glowing station. Finish in order.</p></div>`;
+  let lastAct = 0;
+  STATIONS.forEach((s,i)=>{
+    if(s.act !== lastAct){
+      lastAct = s.act;
+      html += s.act===1
+        ? `<div class="actlabel a1"><span>ACT I · AT YOUR FRIEND'S</span><hr></div>`
+        : `<div class="actlabel a2"><span>ACT II · BACK HOME</span><hr></div>`;
+    }
+    const unlocked = i===0 || cleared[i-1];
+    const state = cleared[i] ? 'cleared' : (unlocked ? (firstOpen()===i?'current':'') : 'locked');
+    html += `<button class="node ${state}" data-i="${i}" ${unlocked?'':'disabled'}>
+      <span class="nodeicon">${cleared[i]?'✓':s.icon}</span>
+      <span class="nodetext"><b>${s.name}</b><span>${s.steps.length} steps${s.boss?' · boss':''}</span></span>
+      <span class="nodestat">${cleared[i]?'CLEARED':(unlocked?`${s.xp} XP`:'🔒')}</span>
+    </button>`;
+  });
+  html += `</div>`;
+  screen.innerHTML = html;
+  screen.querySelectorAll('.node:not(.locked)').forEach(n=>{
+    n.onclick = ()=>{ si=+n.dataset.i; step=0; view='station'; render(); };
+  });
+}
+function firstOpen(){ const i = cleared.findIndex(c=>!c); return i<0?STATIONS.length-1:i; }
+
+function renderStation(){
+  const s = STATIONS[si];
+  const st = s.steps[step];
+  const imgSrc = s.lesson.img ? ART[s.lesson.img] : null;
+
+  let html = `<div class="stage">
+    <div class="crumb">
+      <span class="chip ${s.chipC}">${s.chip}</span>
+      <span class="chip" style="background:var(--char3);color:var(--ash)">ACT ${s.act}</span>
+    </div>
+    <div class="stitle">${s.name}</div>
+    <p class="sblurb">${s.blurb}</p>`;
+
+  // lesson only on the first step
+  if(step === 0){
+    html += `<div class="lesson">`;
+    if(imgSrc) html += `<figure><img src="${imgSrc}" alt="${s.lesson.title} tutorial"></figure>`;
+    html += `<div class="lessonbody"><b>📖 ${s.lesson.title}</b><p>${s.lesson.body}</p></div></div>`;
+  }
+
+  html += `<div class="stepbar">` + s.steps.map((_,i)=>
+    `<span class="sdot ${i<step?'done':''} ${i===step?'now':''}"></span>`).join('') + `</div>
+    <div class="stepnum">STEP ${step+1} / ${s.steps.length}</div>`;
+
+  html += `<div class="stepcard" id="stepcard">
+    <div class="action">${st.a}</div>
+    <div class="why"><b>Why:</b> ${st.why}</div>`;
+  if(st.warn) html += `<div class="warn"><b>⚠</b> ${st.warn}</div>`;
+  html += `</div>`;
+
+  if(st.timer){
+    html += `<div class="timerbox" id="timer" data-sec="${st.timer.sec}">
+      <span class="dial" style="--p:0%"><span class="readout">${fmt(st.timer.sec)}</span></span>
+      <span class="tlabel"><b>${st.timer.label}</b>tap to start</span></div>`;
+  }
+
+  const last = step === s.steps.length-1;
+  html += `<button class="cta" id="next">${last ? (s.boss?'Face the check →':'Clear the station →') : 'Done · next step →'}</button>`;
+  html += `<div class="btnrow">`;
+  if(step>0) html += `<button class="cta ghost" id="prev">← previous step</button>`;
+  html += `<button class="cta ghost" id="toMap">◄ back to map</button></div></div>`;
+
+  screen.innerHTML = html;
+  if(st.timer) document.getElementById('timer').onclick = e=>toggleTimer(e.currentTarget);
+  document.getElementById('next').onclick = ()=>{
+    beep(760,.07);
+    if(step < s.steps.length-1){ step++; render(); }
+    else if(s.boss && !bossDone[si]){ view='boss'; render(); }
+    else clearStation();
+  };
+  const p = document.getElementById('prev'); if(p) p.onclick = ()=>{ step--; render(); };
+  document.getElementById('toMap').onclick = ()=>{ stopTimers(); view='map'; render(); };
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function renderBoss(){
+  const s = STATIONS[si];
+  screen.innerHTML = `<div class="boss">
+    <div class="bosshead"><div class="skull">🎓</div>
+      <h2>Knowledge Check</h2><p>ANSWER TO CLEAR THE STATION</p></div>
+    <div class="qcard">
+      <p>${s.boss.q}</p>
+      <div class="qopts">${s.boss.opts.map((o,i)=>`<button class="qopt" data-q="${i}">${o}</button>`).join('')}</div>
+      <div class="qexplain" id="qex"><b>Right.</b> ${s.boss.explain}</div>
+    </div>
+    <button class="cta" id="bnext" disabled>Clear the station →</button>
+    <div class="btnrow"><button class="cta ghost" id="bback">← re-read the steps</button></div>
+  </div>`;
+
+  screen.querySelectorAll('.qopt').forEach(b=>{
+    b.onclick = ()=>{
+      if(bossDone[si]) return;
+      const i = +b.dataset.q;
+      if(i === s.boss.right){
+        b.classList.add('right'); bossDone[si]=true;
+        document.getElementById('qex').classList.add('show');
+        document.getElementById('bnext').disabled = false;
+        screen.querySelectorAll('.qopt').forEach(x=>x.disabled=true);
+        beep(1100,.1); setTimeout(()=>beep(1450,.12),100);
+        addXP(60,'knowledge check');
+      } else {
+        b.classList.add('wrong'); beep(200,.16);
+        setTimeout(()=>b.classList.remove('wrong'),500);
+      }
+    };
+  });
+  document.getElementById('bnext').onclick = ()=>clearStation();
+  document.getElementById('bback').onclick = ()=>{ view='station'; step=s.steps.length-1; render(); };
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function clearStation(){
+  const s = STATIONS[si];
+  stopTimers();
+  if(!cleared[si]){ cleared[si]=true; addXP(s.xp, s.name); }
+  flash(s.final ? 'QUEST COMPLETE' : 'STATION CLEARED');
+  beep(880,.09); setTimeout(()=>beep(1320,.13),95);
+  navigator.vibrate && navigator.vibrate([90,50,140]);
+  setTimeout(()=>{
+    if(cleared.every(Boolean)){ view='victory'; }
+    else { view='map'; }
+    render();
+  }, s.final?900:750);
+}
+
+function renderVictory(){
+  screen.innerHTML = `<div class="victory">
+    <div class="trophy">🍣</div>
+    <h2>Sushi made. Week stocked.</h2>
+    <p>You rolled your first sushi, rescued six and a half pounds of freezer chicken, closed out a bean night that had been open for five weeks, and started a snack experiment — without buying a single gram of protein.</p>
+    <div class="vstats">
+      <div class="vstat"><b>${xp}</b><span>Total XP</span></div>
+      <div class="vstat"><b>${level()}</b><span>Level</span></div>
+      <div class="vstat"><b>$0</b><span>Meat bought</span></div>
+    </div>
+    <div class="recap">
+      <h3>The week from here</h3>
+      <div><span>Thu · tonight</span><em>Homemade sushi</em></div>
+      <div><span>Fri</span><em>Cutlets + Tex-Mex beans + rice</em></div>
+      <div><span>Sat</span><em>Cutlets + veg + dressed salad</em></div>
+      <div><span>Sun</span><em>Next cook — drumsticks are up</em></div>
+      <div><span>Breakfast</span><em>Overnight oats (replaces snack 1)</em></div>
+      <div><span>Snack test</span><em>Roasted chickpeas — report back</em></div>
+    </div>
+    <button class="cta" style="margin-top:20px" id="again">Run it again</button>
+  </div>`;
+  document.getElementById('again').onclick = ()=>{
+    si=0; step=0; xp=0;
+    cleared.forEach((_,i)=>cleared[i]=false);
+    STATIONS.forEach((s,i)=>bossDone[i]=!s.boss);
+    view='title'; render(); window.scrollTo(0,0);
+  };
+}
+
+// ============ TIMER ============
+let timers = {};
+function fmt(s){ const m=Math.floor(s/60), x=s%60; return `${m}:${String(x).padStart(2,'0')}`; }
+function toggleTimer(btn){
+  const key = si+'-'+step;
+  if(timers[key]){
+    clearInterval(timers[key]); delete timers[key];
+    btn.classList.remove('lit','ringing');
+    btn.querySelector('.tlabel').lastChild.textContent = 'tap to start';
+    return;
+  }
+  let remain = +btn.dataset.sec; const total = remain;
+  const dial = btn.querySelector('.dial'), read = btn.querySelector('.readout'), lab = btn.querySelector('.tlabel');
+  btn.classList.add('lit'); btn.classList.remove('rang');
+  lab.lastChild.textContent = 'running… tap to stop';
+  const tick = ()=>{
+    dial.style.setProperty('--p', ((total-remain)/total)*100+'%');
+    read.textContent = fmt(remain);
+    if(remain<=0){
+      clearInterval(timers[key]); delete timers[key];
+      btn.classList.remove('lit'); btn.classList.add('rang','ringing');
+      read.textContent='DONE'; lab.lastChild.textContent='✓ move on';
+      ring(); navigator.vibrate && navigator.vibrate([200,100,200,100,200]);
+      setTimeout(()=>btn.classList.remove('ringing'),4500);
+      return;
+    }
+    remain--;
+  };
+  tick(); timers[key] = setInterval(tick,1000);
+}
+function stopTimers(){ Object.values(timers).forEach(clearInterval); timers={}; }
+
+// ============ FX ============
+let ac;
+function audio(){ if(!ac){ try{ ac = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} }
+  if(ac && ac.state==='suspended') ac.resume(); return ac; }
+function beep(f,d){ const a=audio(); if(!a) return;
+  const o=a.createOscillator(), g=a.createGain();
+  o.type='sine'; o.frequency.value=f; o.connect(g); g.connect(a.destination);
+  g.gain.setValueAtTime(.0001,a.currentTime);
+  g.gain.exponentialRampToValueAtTime(.2,a.currentTime+.01);
+  g.gain.exponentialRampToValueAtTime(.0001,a.currentTime+d);
+  o.start(); o.stop(a.currentTime+d); }
+function ring(){ [0,.19,.38].forEach(t=>setTimeout(()=>beep(1046,.16), t*1000)); }
+function flash(text){ const f=document.getElementById('flash');
+  f.querySelector('span').textContent = text;
+  f.classList.remove('go'); void f.offsetWidth; f.classList.add('go'); }
+let toastT;
+function toast(msg){ const t=document.getElementById('toast');
+  t.textContent = msg; t.classList.add('on');
+  clearTimeout(toastT); toastT = setTimeout(()=>t.classList.remove('on'), 2200); }
+
+document.getElementById('mapBtn').onclick = ()=>{ stopTimers(); view='map'; render(); };
+render();
+</script>
+</body>
+</html>
