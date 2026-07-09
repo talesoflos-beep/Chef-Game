@@ -193,12 +193,33 @@
   .recap div:last-child{border:none}
   .recap em{color:var(--cream);font-style:normal;font-weight:600;text-align:right}
 
+  /* ============ TIMER TRAY ============ */
+  #tray{position:fixed;left:0;right:0;bottom:0;z-index:45;display:none;gap:8px;overflow-x:auto;
+    padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+    background:linear-gradient(0deg,var(--char) 68%,rgba(20,17,16,0));-webkit-overflow-scrolling:touch}
+  #tray.on{display:flex}
+  body.traypad{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+  body.traypad #toast{bottom:96px}
+  .tchip{flex:none;display:flex;align-items:center;gap:9px;border:1px solid var(--line);background:var(--char2);
+    color:var(--cream);border-radius:99px;padding:6px 14px 6px 7px;cursor:pointer;transition:.15s;
+    -webkit-tap-highlight-color:transparent}
+  .tchip:hover{border-color:rgba(77,184,232,.45)}
+  .tchip .mini{flex:none;width:30px;height:30px;border-radius:50%;
+    background:radial-gradient(circle,var(--char2) 0 55%,transparent 56%),conic-gradient(var(--ember) var(--p,0%),rgba(244,234,217,.08) 0)}
+  .tchip .tinfo{display:flex;flex-direction:column;align-items:flex-start;line-height:1.3;text-align:left}
+  .tchip .tinfo b{font-size:.66rem;font-weight:600;white-space:nowrap}
+  .tchip .tsub{font-family:'Space Mono',monospace;font-size:.72rem;color:var(--flame);white-space:nowrap}
+  .tchip.rang{border-color:var(--sage);background:rgba(134,176,107,.12);animation:shake .4s ease-in-out 3}
+  .tchip.rang .mini{background:radial-gradient(circle,var(--char2) 0 55%,transparent 56%),var(--sage)}
+  .tchip.rang .tsub{color:var(--sage)}
+
   @media (prefers-reduced-motion: reduce){*{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
 </style>
 </head>
 <body>
 <div id="flash"><span></span></div>
 <div id="toast"></div>
+<div id="tray" aria-label="Running timers"></div>
 
 <div class="wrap">
   <div id="hud">
@@ -273,7 +294,7 @@ const SAVE_KEY = SESSION ? 'kq:' + (SESSION.id || 'session') : null;
 function save(){
   if(!SAVE_KEY) return;
   try{
-    localStorage.setItem(SAVE_KEY, JSON.stringify({ v:1, view, si, step, xp, cleared, bossDone }));
+    localStorage.setItem(SAVE_KEY, JSON.stringify({ v:1, view, si, step, xp, cleared, bossDone, timers }));
   }catch(e){ /* storage full/denied — the game still plays, it just won't resume */ }
 }
 function wipeSave(){ try{ SAVE_KEY && localStorage.removeItem(SAVE_KEY); }catch(e){} }
@@ -292,10 +313,17 @@ function restore(){
   step = Math.min(Math.max(d.step|0, 0), STATIONS[si].steps.length-1);
   view = ['title','map','station','boss','victory'].includes(d.view) ? d.view : 'map';
   if(view==='boss' && (!STATIONS[si].boss || bossDone[si])) view = 'station';
+  // timers survive the reload too; ones that finished while the page was dead
+  // come back as DONE (silently — no ring for something that rang an hour ago)
+  if(d.timers && typeof d.timers === 'object'){
+    timers = d.timers;
+    for(const k in timers){ const t = timers[k]; if(!t.rang && remainOf(t) <= 0) t.rang = true; }
+    if(Object.keys(timers).length) ensureLoop();
+  }
 }
 
 function hardReset(){
-  wipeSave();
+  wipeSave(); clearAllTimers();
   si=0; step=0; xp=0;
   STATIONS.forEach((s,i)=>{ cleared[i]=false; bossDone[i]=!s.boss; });
   view='title'; render(); window.scrollTo(0,0);
@@ -332,6 +360,7 @@ function addXP(n, why){
 function render(){
   if(PROBLEMS.length) return renderDataError();
   save();               // state is settled by the time anything renders
+  paintTimers();        // tray visibility depends on the view
   syncHUD();
   if(view==='title') return renderTitle();
   if(view==='map') return renderMap();
@@ -420,7 +449,7 @@ function renderStation(){
   html += `</div>`;
 
   if(st.timer){
-    html += `<div class="timerbox" id="timer" data-sec="${st.timer.sec}">
+    html += `<div class="timerbox" id="timer" data-sec="${st.timer.sec}" data-label="${st.timer.label}">
       <span class="dial" style="--p:0%"><span class="readout">${fmt(st.timer.sec)}</span></span>
       <span class="tlabel"><b>${st.timer.label}</b>tap to start</span></div>`;
   }
@@ -432,7 +461,10 @@ function renderStation(){
   html += `<button class="cta ghost" id="toMap">◄ back to map</button></div></div>`;
 
   screen.innerHTML = html;
-  if(st.timer) document.getElementById('timer').onclick = e=>toggleTimer(e.currentTarget);
+  if(st.timer){
+    document.getElementById('timer').onclick = e=>toggleTimer(e.currentTarget);
+    syncStepTimerBox();   // returning to a step whose timer is already running
+  }
   document.getElementById('next').onclick = ()=>{
     beep(760,.07);
     if(step < s.steps.length-1){ step++; render(); }
@@ -440,7 +472,7 @@ function renderStation(){
     else clearStation();
   };
   const p = document.getElementById('prev'); if(p) p.onclick = ()=>{ step--; render(); };
-  document.getElementById('toMap').onclick = ()=>{ stopTimers(); view='map'; render(); };
+  document.getElementById('toMap').onclick = ()=>{ view='map'; render(); };
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -482,7 +514,8 @@ function renderBoss(){
 
 function clearStation(){
   const s = STATIONS[si];
-  stopTimers();
+  // timers deliberately survive station clear — the beans simmer on while
+  // you set up the chickpeas; the tray keeps watching them
   if(!cleared[si]){ cleared[si]=true; addXP(s.xp, s.name); }
   flash(s.final ? 'QUEST COMPLETE' : 'STATION CLEARED');
   beep(880,.09); setTimeout(()=>beep(1320,.13),95);
@@ -514,37 +547,117 @@ function renderVictory(){
   document.getElementById('again').onclick = ()=>hardReset();
 }
 
-// ============ TIMER ============
-let timers = {};
+// ============ TIMERS (global) ============
+// Real cooking runs the pot and the pan at once, so timers are global state,
+// not station state: they keep running when you navigate away and show up in
+// a tray pinned to the bottom of every screen. Each stores a wall-clock end
+// timestamp — a throttled tab, a locked phone, or a full reload can't drift
+// it. The set rides in the save blob; on restore, ones that finished while
+// the page was dead show up as DONE instead of silently vanishing.
+let timers = {};        // "si-step" -> {label,total,endAt,rang,si,step,icon}
+let timerLoop = null;
+
 function fmt(s){ const m=Math.floor(s/60), x=s%60; return `${m}:${String(x).padStart(2,'0')}`; }
-function toggleTimer(btn){
-  const key = si+'-'+step;
-  if(timers[key]){
-    clearInterval(timers[key]); delete timers[key];
-    btn.classList.remove('lit','ringing');
-    btn.querySelector('.tlabel').lastChild.textContent = 'tap to start';
-    return;
-  }
-  let remain = +btn.dataset.sec; const total = remain;
-  const dial = btn.querySelector('.dial'), read = btn.querySelector('.readout'), lab = btn.querySelector('.tlabel');
-  btn.classList.add('lit'); btn.classList.remove('rang');
-  lab.lastChild.textContent = 'running… tap to stop';
-  const tick = ()=>{
-    dial.style.setProperty('--p', ((total-remain)/total)*100+'%');
-    read.textContent = fmt(remain);
-    if(remain<=0){
-      clearInterval(timers[key]); delete timers[key];
-      btn.classList.remove('lit'); btn.classList.add('rang','ringing');
-      read.textContent='DONE'; lab.lastChild.textContent='✓ move on';
-      ring(); navigator.vibrate && navigator.vibrate([200,100,200,100,200]);
-      setTimeout(()=>btn.classList.remove('ringing'),4500);
-      return;
-    }
-    remain--;
-  };
-  tick(); timers[key] = setInterval(tick,1000);
+function timerKey(i,j){ return i+'-'+j; }
+function remainOf(t){ return Math.max(0, Math.round((t.endAt - Date.now())/1000)); }
+
+function startTimer(i,j,label,sec){
+  timers[timerKey(i,j)] = { label, total:sec, endAt:Date.now()+sec*1000, rang:false, si:i, step:j, icon:STATIONS[i].icon };
+  ensureLoop(); save(); paintTimers();
 }
-function stopTimers(){ Object.values(timers).forEach(clearInterval); timers={}; }
+function dismissTimer(key){ delete timers[key]; save(); paintTimers(); }
+function clearAllTimers(){
+  timers = {};
+  if(timerLoop){ clearInterval(timerLoop); timerLoop=null; }
+  paintTimers();
+}
+function ensureLoop(){ if(!timerLoop) timerLoop = setInterval(tickTimers, 1000); }
+
+function tickTimers(){
+  for(const k in timers){
+    const t = timers[k];
+    if(!t.rang && remainOf(t) <= 0){
+      t.rang = true;
+      ring(); navigator.vibrate && navigator.vibrate([200,100,200,100,200]);
+      toast(`⏱ ${t.label} — done`);   // you might be two stations away by now
+      if(view==='station' && timerKey(si,step)===k){
+        const box = document.getElementById('timer');
+        if(box){ box.classList.add('ringing'); setTimeout(()=>box.classList.remove('ringing'),4500); }
+      }
+      save();
+    }
+  }
+  paintTimers();
+  if(!Object.keys(timers).length && timerLoop){ clearInterval(timerLoop); timerLoop=null; }
+}
+
+// Tap behavior on the step card's own timer box:
+// idle → start · running → stop · rung → clear (ready to restart)
+function toggleTimer(box){
+  const key = timerKey(si,step);
+  if(!timers[key]) startTimer(si, step, box.dataset.label, +box.dataset.sec);
+  else dismissTimer(key);
+  syncStepTimerBox();
+}
+
+// Keep the on-screen step timer box in sync with the global store
+function syncStepTimerBox(){
+  const box = document.getElementById('timer');
+  if(!box || view!=='station') return;
+  const t = timers[timerKey(si,step)];
+  const dial = box.querySelector('.dial'), read = box.querySelector('.readout'), lab = box.querySelector('.tlabel');
+  if(!t){
+    box.classList.remove('lit','rang');
+    dial.style.setProperty('--p','0%');
+    read.textContent = fmt(+box.dataset.sec);
+    lab.lastChild.textContent = 'tap to start';
+  } else if(t.rang){
+    box.classList.remove('lit'); box.classList.add('rang');
+    read.textContent = 'DONE';
+    lab.lastChild.textContent = '✓ move on · tap to reset';
+  } else {
+    const r = remainOf(t);
+    box.classList.add('lit'); box.classList.remove('rang');
+    dial.style.setProperty('--p', ((t.total-r)/t.total)*100+'%');
+    read.textContent = fmt(r);
+    lab.lastChild.textContent = 'running… tap to stop';
+  }
+}
+
+// The tray itself. Rebuilt only when the set of timers changes (so a mid-tap
+// repaint can't eat the tap); countdowns update in place every second.
+function paintTimers(){
+  const tray = document.getElementById('tray');
+  const keys = Object.keys(timers);
+  const show = keys.length > 0 && view!=='title';
+  tray.classList.toggle('on', show);
+  document.body.classList.toggle('traypad', show);
+  const sig = keys.map(k=>k+(timers[k].rang?'!':'')).join('|');
+  if(tray.dataset.sig !== sig){
+    tray.dataset.sig = sig;
+    tray.innerHTML = keys.map(k=>{
+      const t = timers[k];
+      return `<button class="tchip ${t.rang?'rang':''}" data-k="${k}">
+        <span class="mini"></span>
+        <span class="tinfo"><b>${t.icon||'⏱'} ${t.label}</b><span class="tsub"></span></span>
+      </button>`;
+    }).join('');
+    tray.querySelectorAll('.tchip').forEach(c=>{
+      c.onclick = ()=>{
+        const t = timers[c.dataset.k];
+        if(!t) return;
+        if(t.rang){ dismissTimer(c.dataset.k); syncStepTimerBox(); return; }
+        si = t.si; step = t.step; view = 'station'; render();  // jump to the burner
+      };
+    });
+  }
+  keys.forEach(k=>{
+    const el = tray.querySelector(`[data-k="${k}"]`); if(!el) return;
+    const t = timers[k], r = remainOf(t);
+    el.querySelector('.mini').style.setProperty('--p', (t.rang?100:((t.total-r)/t.total)*100)+'%');
+    el.querySelector('.tsub').textContent = t.rang ? 'DONE · tap to clear' : fmt(r);
+  });
+}
 
 // ============ WAKE LOCK ============
 // A phone that sleeps mid-simmer takes the timers with it. Hold a screen wake
@@ -558,7 +671,10 @@ async function keepAwake(){
   catch(e){ /* denied — nothing to do, and nothing broken */ }
 }
 document.addEventListener('visibilitychange', ()=>{
-  if(document.visibilityState === 'visible') keepAwake();
+  if(document.visibilityState === 'visible'){
+    keepAwake();
+    if(Object.keys(timers).length) tickTimers();  // correct countdowns immediately, don't wait a tick
+  }
 });
 
 // ============ FX ============
@@ -581,7 +697,7 @@ function toast(msg){ const t=document.getElementById('toast');
   t.textContent = msg; t.classList.add('on');
   clearTimeout(toastT); toastT = setTimeout(()=>t.classList.remove('on'), 2200); }
 
-document.getElementById('mapBtn').onclick = ()=>{ stopTimers(); view='map'; render(); };
+document.getElementById('mapBtn').onclick = ()=>{ view='map'; render(); };
 restore();   // lock screen, refresh, tab kill — come back to exactly where you were
 keepAwake(); // wakeLock.request needs visibility, not a tap — safe to call at boot
 render();
