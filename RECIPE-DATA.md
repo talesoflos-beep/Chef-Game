@@ -38,7 +38,18 @@
 - Season the rice **warm**, then cool to **room temperature** before rolling. Hot rice tears nori and steams it soggy. Cold rice won't absorb.
 - **Fold with a cutting motion** (slice down, lift, turn). Never stir — stirring mashes grains.
 
-## Rolling — VERIFIED technique sequence
+## Onigiri — ACTIVE (swap 2026-07-09: nori unavailable, replaces the roll)
+
+*(Technique owner-delegated 2026-07-09 — standard onigiri method, not re-verified against a published source. The rolling section below stays for whenever nori turns up.)*
+
+- **Rice: same cook as sushi rice above** (1½ cups : 1¾ water, rinse 3+, boil, lowest heat 15 min lid on, rest 10, fluff). **Skip the vinegar seasoning entirely** — onigiri rice is plain; the seasoning is a **pinch of salt rubbed onto wet palms** before each ball.
+- Shape while the rice is **warm, not hot and not cold.** Warm rice is sticky rice — the starch binds as it's pressed and cools into shape. Hot rice burns your hands; cold rice crumbles.
+- **Method:** wet both hands → pinch of salt across the palms → palmful of rice (~½ cup) → press a dent → a spoonful of filling → cap with a little rice → **press-and-rotate into a triangle, 3–4 turns, firm but not crushing.** Re-wet and re-salt between balls.
+- **Fillings:** the mayo-free spicy crab mix (below) is the star. Avocado in small pieces optional. Cucumber sticks become the crunchy side, not a filling.
+- **Failure mode to teach:** a crumbling onigiri = rice too cold + pressed too gently. Not the salt, not the shape.
+- Batch yields **about 8** from 1½ cups dry rice.
+
+## Rolling — VERIFIED technique sequence (PARKED — needs nori)
 
 1. **SPREAD** — nori shiny side down, rough side up. Rice over the bottom ⅔, ~¼ inch thick. **Leave the top inch bare.**
 2. **FILL** — one modest line across the near edge. Underfill on purpose.

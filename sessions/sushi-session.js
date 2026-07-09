@@ -9,18 +9,18 @@ window.KQ_SESSION = {
   "dogAct": 2,
   "titleScreen": {
     "h1": "Kitchen Quest II",
-    "em": "The Sushi Session",
-    "tagline": "Two acts. Nine stations. You'll roll your first sushi, rescue six pounds of freezer chicken, and finally cook the bean night you've been carrying for five weeks."
+    "em": "The Onigiri Session",
+    "tagline": "Two acts. Nine stations. You'll press your first onigiri, rescue six pounds of freezer chicken, and finally cook the bean night you've been carrying for five weeks."
   },
   "acts": {
     "1": "ACT I · AT YOUR FRIEND'S",
     "2": "ACT II · BACK HOME"
   },
   "art": {
-    "title": "https://d8j0ntlcm91z4.cloudfront.net/user_3EylphvKs2oAnPWYNSj56iFecDN/hf_20260709_173935_8495c97f-d860-4e49-9775-781cf0a20d40.png",
-    "roll":  "https://d8j0ntlcm91z4.cloudfront.net/user_3EylphvKs2oAnPWYNSj56iFecDN/hf_20260709_173914_494b2dd8-a730-468f-be82-501b82428780.png",
+    "title": "https://d8j0ntlcm91z4.cloudfront.net/user_3EylphvKs2oAnPWYNSj56iFecDN/hf_20260709_201226_6ebebfbd-bece-4587-88a4-a8702335b4c3.png",
+    "onigiri": "https://d8j0ntlcm91z4.cloudfront.net/user_3EylphvKs2oAnPWYNSj56iFecDN/hf_20260709_201229_b5f0e04f-bec5-4b7c-9534-3fa521ebebc3.png",
     "cutlet": "https://d8j0ntlcm91z4.cloudfront.net/user_3EylphvKs2oAnPWYNSj56iFecDN/hf_20260709_173924_f714dd40-bd78-43b7-8206-3d8a3835e7dd.png",
-    "rice": "https://d8j0ntlcm91z4.cloudfront.net/user_3EylphvKs2oAnPWYNSj56iFecDN/hf_20260709_174652_0ce24b62-00cf-4309-8475-a11a22183653.png",
+    "rice": "https://d8j0ntlcm91z4.cloudfront.net/user_3EylphvKs2oAnPWYNSj56iFecDN/hf_20260709_201319_40586dfb-c3f0-4766-bdf9-9c1a736eb5d8.png",
     "pan": "https://d8j0ntlcm91z4.cloudfront.net/user_3EylphvKs2oAnPWYNSj56iFecDN/hf_20260709_174700_3f5f5f70-a9df-4a55-aeeb-ab9ea0cd5604.png",
     "prep": "https://d8j0ntlcm91z4.cloudfront.net/user_3EylphvKs2oAnPWYNSj56iFecDN/hf_20260709_195902_2c6ddbf0-eff3-4b1b-bb5a-2f0099a6836f.png",
     "fillings": "https://d8j0ntlcm91z4.cloudfront.net/user_3EylphvKs2oAnPWYNSj56iFecDN/hf_20260709_195906_e39b5233-6af8-4774-ae10-fedec336702a.png",
@@ -29,15 +29,15 @@ window.KQ_SESSION = {
     "chickpea": "https://d8j0ntlcm91z4.cloudfront.net/user_3EylphvKs2oAnPWYNSj56iFecDN/hf_20260709_195918_cee61ea5-08ba-4ca4-8f4d-2ec5caeef35f.png"
   },
   "victory": {
-    "emoji": "🍣",
-    "heading": "Sushi made. Week stocked.",
-    "body": "You rolled your first sushi, rescued six and a half pounds of freezer chicken, closed out a bean night that had been open for five weeks, and started a snack experiment — without buying a single gram of protein.",
+    "emoji": "🍙",
+    "heading": "Onigiri made. Week stocked.",
+    "body": "You pressed your first onigiri, rescued six and a half pounds of freezer chicken, closed out a bean night that had been open for five weeks, and started a snack experiment — without buying a single gram of protein.",
     "stats": [
       { "value": "$0", "label": "Meat bought" }
     ],
     "recapTitle": "The week from here",
     "recap": [
-      { "when": "Thu · tonight", "what": "Homemade sushi" },
+      { "when": "Thu · tonight", "what": "Homemade onigiri" },
       { "when": "Fri", "what": "Cutlets + Tex-Mex beans + rice" },
       { "when": "Sat", "what": "Cutlets + veg + dressed salad" },
       { "when": "Sun", "what": "Next cook — drumsticks are up" },
@@ -52,73 +52,69 @@ window.KQ_SESSION = {
       "lesson": {
         "image": "prep",
         "title": "THE ONE RULE OF TODAY",
-        "body": "Cold stays cold. Frozen thaws in the fridge, never on the counter — the outside enters the bacteria zone hours before the middle softens. And you shop <b>before</b> you roll, because the nori can't be at the store while you're at his kitchen table."
+        "body": "Cold stays cold. Frozen thaws in the fridge, never on the counter — the outside enters the bacteria zone hours before the middle softens. And you shop <b>before</b> you shape, because the crab can't be at the store while you're at his kitchen table."
       },
       "steps": [
         { "action": "<b>Chicken breasts: freezer → fridge. Right now.</b>", "why": "They'll thaw slowly and safely across the afternoon while you're out. This is the single step that can't be recovered later — everything else in this game forgives delay." },
-        { "action": "Pack the travel kit: <b>sushi rice, soy sauce, sesame oil, sugar, salt, one hot sauce.</b>", "why": "You already own all of it. Bringing it means the only things you buy are the things you genuinely don't have." },
+        { "action": "Pack the travel kit: <b>sushi rice, soy sauce, sesame oil, salt, one hot sauce.</b>", "why": "You already own all of it. Bringing it means the only things you buy are the things you genuinely don't have. No nori tonight means no vinegar and no sugar either — onigiri rice is plain, seasoned by salted hands." },
         { "action": "Add an <b>insulated bag with an ice pack</b> to the car.", "why": "It's July. The crab, spring mix and berries ride home with you after the hangout — that's a few hours of warm car without it." },
-        { "action": "At the store, sushi aisle: <b>nori, unseasoned rice vinegar, cucumber, 2 ripe avocados, imitation crab.</b>", "why": "Two label checks. <b>Vinegar:</b> unseasoned = 0 calories on the panel. If it has calories, sugar and salt are already in it and you'd double-season. <b>Crab:</b> egg white is a common binder in surimi — read the ingredients, your reflux depends on it." },
+        { "action": "At the store: <b>cucumber, 2 ripe avocados, imitation crab.</b>", "why": "One label check that actually matters: <b>egg white is a common binder in surimi</b> — read the crab's ingredients, your reflux depends on it. And notice what fell off this list: no nori hunt, no vinegar. Onigiri just cut your shopping in half." },
         { "action": "Same trip, the week's food: <b>broccoli, 2 bell peppers, spring mix, old-fashioned rolled oats, unsweetened almond or oat milk, bananas, berries, apples.</b>", "why": "Notice what's not on this list: chicken and rice. You already own 6.5 lb of frozen chicken and two open containers of rice. That's the whole point of the inventory doc." },
         { "action": "Cold items into the cooler bag. Head to your friend's.", "why": "Act 1 starts when you walk in the door." }
       ]
     },
     {
-      "act": 1, "icon": "🍚", "name": "Sushi rice", "chip": "pot", "xp": 180,
-      "blurb": "The rice is the sushi. Sushi bars guard the rice recipe harder than the fish supplier. Nail this and the rest is assembly.",
+      "act": 1, "icon": "🍚", "name": "Onigiri rice", "chip": "pot", "xp": 180,
+      "blurb": "The rice is the onigiri. There is no wrapper to hide behind tonight — just rice cooked right and pressed with intent. Nail this and the rest is assembly.",
       "lesson": {
         "image": "rice",
-        "title": "WARM TO SEASON, COOL TO ROLL",
-        "body": "Warm rice drinks the vinegar in; cold rice just gets wet. But <b>hot</b> rice tears nori and steams it limp. So: season warm, then cool to room temp before rolling. The classic seasoning ratio is 4 parts vinegar : 2 sugar : 1 salt — yours tonight is 4 tbsp / 1½ tbsp / 1 tsp."
+        "title": "PLAIN RICE, SALTED HANDS",
+        "body": "Onigiri rice is <b>plain</b> — no vinegar, no sugar. The seasoning happens later, from a pinch of salt rubbed onto your wet palms before each ball. What matters here is texture: firm, intact grains that will bind when pressed. That means rinsing well, and keeping the lid on for the entire cook."
       },
       "steps": [
-        { "action": "Rinse <b>1½ cups sushi rice</b> in a strainer until the water runs mostly clear. Three rinses minimum.", "why": "You're washing off loose surface starch. Skip it and the grains glue into paste instead of clinging like sushi rice should." },
-        { "action": "Rice + <b>1¾ cups water</b> in a pot. Lid on. Bring to a boil.", "why": "Slightly less water than you'd use for a fluffy side dish — sushi rice wants to be a touch firm, because it's about to absorb 4 tablespoons of vinegar." },
+        { "action": "Rinse <b>1½ cups sushi rice</b> in a strainer until the water runs mostly clear. Three rinses minimum.", "why": "You're washing off loose surface starch. Skip it and the grains glue into paste instead of clinging the way onigiri should." },
+        { "action": "Rice + <b>1¾ cups water</b> in a pot. Lid on. Bring to a boil.", "why": "Slightly less water than you'd use for a fluffy side dish — you want grains a touch firm, because they're about to be pressed hard enough to hold a shape." },
         { "action": "Drop to the <b>lowest heat, 15 minutes. Do not lift the lid.</b>", "why": "The steam trapped under that lid is doing the cooking. Every peek releases it and you're cooking a different dish than the one the timer was set for.", "timer": { "label": "Simmer, lid on", "sec": 900 } },
         { "action": "Heat off. <b>Lid still on. Rest 10 minutes.</b> Then fluff.", "why": "The residual steam finishes the grains at the top of the pot, which are always a little behind.", "timer": { "label": "Rest off-heat", "sec": 600 } },
-        { "action": "Stir <b>4 tbsp rice vinegar + 1½ tbsp sugar + 1 tsp salt</b> in a cup until dissolved.", "why": "Ten seconds in the microwave dissolves it faster. Undissolved sugar means gritty rice." },
-        { "action": "Pour it over the warm rice and <b>fold with a cutting motion</b> — slice down through, lift, turn.", "why": "Stirring crushes the grains into mush. Cutting separates them while coating each one. This is the single most-skipped technique in home sushi." },
-        { "action": "Spread the rice flat and let it cool to <b>room temperature</b>.", "why": "This is your window to cut fillings. Fan it if you're impatient. Room temp is the goal — not cold, not warm." }
+        { "action": "Let it cool just until you can handle it. <b>Warm, not hot — and not cold.</b>", "why": "Warm rice is sticky rice: the starch binds as it's pressed and cools into shape. Hot rice burns your hands; cold rice crumbles. This cooling window is exactly when you cut the fillings." }
       ]
     },
     {
       "act": 1, "icon": "🥒", "name": "Cut the fillings", "chip": "board", "xp": 120,
-      "blurb": "While the rice cools. One shape for everything: long, thin, pencil-width.",
+      "blurb": "While the rice cools. The filling hides in a pocket in the middle, so everything gets cut small.",
       "lesson": {
         "image": "fillings",
-        "title": "WHY PENCIL-WIDTH",
-        "body": "Fat fillings force a fat roll, and fat rolls burst at the seam. Thin uniform sticks roll tight and slice clean. Bonus: <b>imitation crab is already fully cooked</b> — it goes from package to roll with zero heat. That's why tonight needed no thawing."
+        "title": "SMALL ENOUGH TO TUCK",
+        "body": "An onigiri filling sits in a pocket in the center of the rice — a spoonful, not a slab. Too big and the triangle can't close around it. Bonus: <b>imitation crab is already fully cooked</b> — it goes from package to filling with zero heat. That's why tonight needed no thawing."
       },
       "steps": [
-        { "action": "Cucumber: halve lengthwise, <b>scrape the seeds out with a spoon</b>, then cut into pencil sticks.", "why": "The seed core is water. Leave it in and it weeps into the rice, and a soggy roll falls apart in your hand." },
-        { "action": "Avocado: halve, pit, peel, slice into thin strips.", "why": "A ripe one yields slightly under your thumb. Rock-hard won't slice; mush won't hold a line." },
-        { "action": "Crab sticks: pull into strips, or leave them whole.", "why": "They already come in exactly the shape you need. Doing less here is correct." },
-        { "action": "Optional spicy crab: shred a few sticks, mix with <b>hot sauce + 1 tsp sesame oil.</b>", "why": "That's a spicy roll with no mayo, no egg, no dairy — a real constraint-dodge, not a compromise. Sesame oil does the richness that mayo usually does." }
+        { "action": "<b>Spicy crab — the star filling:</b> shred the crab sticks, mix with <b>hot sauce + 1 tsp sesame oil.</b>", "why": "No mayo, no egg, no dairy — a real constraint-dodge, not a compromise. Sesame oil does the richness that mayo usually does, and it's a classic onigiri filling for a reason." },
+        { "action": "Cucumber: halve lengthwise, <b>scrape the seeds out with a spoon</b>, then cut into pencil sticks.", "why": "Tonight the cucumber is the crunchy side, not a filling — the seed-scrape keeps the sticks crisp instead of watery on the plate." },
+        { "action": "Avocado: halve, pit, peel, cut into <b>small pieces.</b>", "why": "A ripe one yields slightly under your thumb. Small pieces tuck into a rice pocket; long strips were for rolls and would split a triangle open." }
       ]
     },
     {
-      "act": 1, "icon": "🍣", "name": "Roll & slice", "chip": "roll", "xp": 240,
-      "blurb": "The main event. Your first roll will be ugly. Your third will be decent. Your sixth goes on a plate like you meant it. That's the real curve — don't quit at roll two.",
+      "act": 1, "icon": "🍙", "name": "Shape & press", "chip": "board", "xp": 240,
+      "blurb": "The main event. Your first onigiri will be ugly. Your third will be decent. Your sixth goes on a plate like you meant it. That's the real curve — don't quit at triangle two.",
       "lesson": {
-        "image": "roll",
+        "image": "onigiri",
         "title": "THE FOUR MOVES",
-        "body": "<b>SPREAD</b> rice over the bottom two-thirds, top inch left bare · <b>FILL</b> one modest line across the near edge · <b>ROLL</b> away from you, tucking with fingertips · <b>SLICE</b> with a wet knife, every single cut. The bare strip of nori is the glue — a dab of water seals the whole roll shut."
+        "body": "<b>WET + SALT</b> both palms before every ball · <b>SCOOP</b> a palmful of warm rice · <b>TUCK</b> a spoonful of filling into a dent and cap it · <b>PRESS</b> into a triangle, rotating as you go — firm enough to hold, never crushing. The warmth of the rice is the glue: it binds as it cools into shape."
       },
       "steps": [
-        { "action": "Mat down. Nori <b>shiny side down</b>, rough side up.", "why": "The rough side grips rice. Shiny side out gives you that clean dark exterior. No mat? Plastic wrap over a folded kitchen towel works fine." },
-        { "action": "Keep a bowl of water beside you. <b>Wet your fingers.</b>", "why": "Wet hands are the entire anti-stick strategy. Re-wet constantly — the moment rice sticks to you instead of the nori, you're fighting the roll." },
-        { "action": "Spread rice over the bottom <b>two-thirds</b>, about ¼ inch thick. <b>Leave the top inch bare.</b>", "why": "Thin. Thinner than instinct says. The bare inch is not optional — it's the seam that seals the roll." },
-        { "action": "Lay <b>one line</b> of filling across the near edge. Crab + cucumber, or avocado + cucumber.", "why": "Underfill on purpose. Overfilling is the number one reason a first roll bursts open, and it's the hardest urge to resist." },
-        { "action": "Lift the mat edge and <b>roll away from you, tucking the filling in with your fingertips</b> as the nori comes over.", "why": "The tuck is what makes it tight. Roll loose and you get a hollow tube that collapses under the knife." },
-        { "action": "Dab water on the bare strip. Finish the roll. <b>Squeeze gently</b> along its length.", "why": "Gently. You're sealing, not compressing. Too much pressure and the filling extrudes out the ends." },
-        { "action": "<b>Wet the knife before every cut.</b> Halve the roll, then each half into thirds.", "why": "A dry blade drags the rice and shreds the nori. Six clean pieces per roll. Wipe and re-wet between each cut, not once at the start." },
-        { "action": "Repeat until the rice is gone. Soy sauce to dip. Eat, hang out, then head home for Act 2.", "why": "You made sushi. That's a real skill you didn't have this morning." }
+        { "action": "Set up the station: <b>a bowl of water and a small dish of salt</b> next to the rice pot.", "why": "Your hands are the only tool tonight. Everything they need sits within reach before any rice touches them." },
+        { "action": "<b>Wet both hands, then rub a pinch of salt across your palms.</b>", "why": "Wet hands are the entire anti-stick strategy, and the salt on your palms is the only seasoning this rice gets — a thin, even coat on the outside of every ball." },
+        { "action": "Scoop a <b>palmful of warm rice</b> — about ½ cup.", "why": "Warm is the working window. The starch binds as the rice is pressed and cools; wait too long and it crumbles instead of holding." },
+        { "action": "Press a <b>dent in the center</b> and tuck in <b>a spoonful of spicy crab</b> — or a couple pieces of avocado.", "why": "A pocket, not a mix. A modest filling keeps the walls thick enough to close; overfilling is the number one reason a first onigiri splits, and it's the hardest urge to resist." },
+        { "action": "Cap it with a little more rice, then <b>press into a triangle: cup both hands and rotate-press, 3–4 turns.</b>", "why": "Firm enough that it holds together, never so hard it turns to a brick. The rotation is what makes the sides even — the shape comes from repetition, not force." },
+        { "action": "Repeat until the rice is gone — <b>about 8. Re-wet and re-salt your hands every time.</b>", "why": "The moment rice starts sticking to you instead of to itself, you're fighting the shape. Fresh water and salt resets it." },
+        { "action": "Cucumber sticks on the side, soy sauce to dip. Eat, hang out, then head home for Act 2.", "why": "You made onigiri, by hand, with no wrapper to hide behind. That's a real skill you didn't have this morning." }
       ],
       "boss": {
-        "q": "Your roll keeps splitting open along the seam. What's the most likely cause?",
-        "opts": ["The rice was too cold to stick", "Too much filling, and no bare nori strip to seal against", "You rolled toward yourself instead of away"],
+        "q": "Your onigiri crumbles apart as soon as you pick it up. What's the most likely cause?",
+        "opts": ["Too much salt on your hands", "The rice went cold before shaping, and the press was too gentle", "Triangles are unstable — should have made balls"],
         "right": 1,
-        "explain": "Overfilling is the rookie killer — the seam physically can't close around a fat core. Keep the filling to one modest line, leave that top inch of nori bare, and wet it before the final turn."
+        "explain": "Warmth and pressure are the two binders. Warm rice is sticky rice — its starch fuses as it's pressed and cools into shape. Cold rice plus a timid press means loose grains in a costume. Shape while warm, press firm, rotate 3–4 turns."
       }
     },
     {
